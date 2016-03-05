@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Akka.Raft", "Akka.Raft\Akka.Raft.csproj", "{ABE50412-E9F0-407F-8428-A563362E5897}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Example Hosts", "Example Hosts", "{C8E35DFF-80AB-4C04-B563-6485612F855F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Akka.Raft.ExampleClient", "Akka.Raft.ExampleClient\Akka.Raft.ExampleClient.csproj", "{5098B69D-563E-46FE-ADF9-62351D086D37}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Akka.Raft.ExampleHost", "Akka.Raft.ExampleHost\Akka.Raft.ExampleHost.csproj", "{A08CCD3A-5949-4BC3-B809-EDC9B10C2E89}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Akka.Raft.Tests", "Akka.Raft.Tests\Akka.Raft.Tests.csproj", "{BE5C105F-20B4-4C8A-9EC7-F0B9054C3012}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{ABE50412-E9F0-407F-8428-A563362E5897}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ABE50412-E9F0-407F-8428-A563362E5897}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ABE50412-E9F0-407F-8428-A563362E5897}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ABE50412-E9F0-407F-8428-A563362E5897}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5098B69D-563E-46FE-ADF9-62351D086D37}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5098B69D-563E-46FE-ADF9-62351D086D37}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5098B69D-563E-46FE-ADF9-62351D086D37}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5098B69D-563E-46FE-ADF9-62351D086D37}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A08CCD3A-5949-4BC3-B809-EDC9B10C2E89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A08CCD3A-5949-4BC3-B809-EDC9B10C2E89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A08CCD3A-5949-4BC3-B809-EDC9B10C2E89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A08CCD3A-5949-4BC3-B809-EDC9B10C2E89}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE5C105F-20B4-4C8A-9EC7-F0B9054C3012}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE5C105F-20B4-4C8A-9EC7-F0B9054C3012}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE5C105F-20B4-4C8A-9EC7-F0B9054C3012}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE5C105F-20B4-4C8A-9EC7-F0B9054C3012}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5098B69D-563E-46FE-ADF9-62351D086D37} = {C8E35DFF-80AB-4C04-B563-6485612F855F}
+		{A08CCD3A-5949-4BC3-B809-EDC9B10C2E89} = {C8E35DFF-80AB-4C04-B563-6485612F855F}
+	EndGlobalSection
+EndGlobal
