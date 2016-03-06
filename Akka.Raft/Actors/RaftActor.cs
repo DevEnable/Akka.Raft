@@ -44,6 +44,7 @@ namespace Akka.Raft
                     _term = new Term(m.Term, Sender);
                     CancelScheduling();
                     Sender.Tell(new VoteMessage(m.Term, Sender));
+                    ScheduleElection();
                 }
                 else if (_term.TermNumber == m.Term)
                 {
@@ -80,7 +81,7 @@ namespace Akka.Raft
 
             if (!HasLeader)
             {
-                _schedulingCancellation = Context.System.Scheduler.ScheduleTellOnceCancelable(GetElectionTimeout(), Self, new BecomeCandidateMessage(), Self);
+                ScheduleElection();
             }
         }
 
@@ -161,6 +162,11 @@ namespace Akka.Raft
                 _schedulingCancellation.Cancel();
                 _schedulingCancellation = null;
             }
+        }
+
+        private void ScheduleElection()
+        {
+            _schedulingCancellation = Context.System.Scheduler.ScheduleTellOnceCancelable(GetElectionTimeout(), Self, new BecomeCandidateMessage(), Self);
         }
 
         private static TimeSpan GetElectionTimeout()
