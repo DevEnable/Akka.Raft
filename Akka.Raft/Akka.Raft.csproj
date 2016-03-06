@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Messages\ValueMessages.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Actors\RaftActor.cs" />
     <Compile Include="Messages\VotingMessages.cs" />

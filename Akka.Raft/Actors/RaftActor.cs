@@ -1,5 +1,6 @@
 ﻿using System;
-using System.Diagnostics;
+using System.Collections.Generic;
+using System.Linq;
 using Akka.Actor;
 using Akka.Event;
 using Akka.Routing;
@@ -9,7 +10,7 @@ namespace Akka.Raft
     public class RaftActor<T> : ReceiveActor
     {
         private Term _term;
-        private T _value;
+        private LinkedList<T> _values;
         private IActorRef _leader = ActorRefs.Nobody;
         private IActorRef _colleagues;
         private ICancelable _schedulingCancellation;
@@ -53,6 +54,20 @@ namespace Akka.Raft
                 
             });
 
+            Receive<T>(m =>
+            {
+                if (Sender.Equals(_leader))
+                {
+                    _values.AddFirst(m);
+                }
+                else
+                {
+                    Context.GetLogger()
+                        .Warning("Received value from a node that is not a leader, discarding value {0}", m);
+                }
+            });
+
+
             CommonHandlers();
 
             if (!HasLeader)
@@ -90,12 +105,28 @@ namespace Akka.Raft
 
         private void Leader()
         {
+            Receive<T>(m =>
+            {
+                // Message sent to itself through the router, discard it.
+                if (Sender.Equals(Self))
+                {
+                    return;
+                }
+
+                _values.AddFirst(m);
+                _colleagues.Tell(m);
+            });
             CommonHandlers();
         }
         
         private void CommonHandlers()
         {
-            Receive<T>(m => _value = m);
+            Receive<GetValueMessage>(m =>
+            {
+                object currentValue = _values.Any() ? (object)_values.First : new NoValueMessage();
+                Sender.Tell(currentValue);
+            });
+
             ReceiveAny(m => Context.GetLogger().Warning("Unexpected message of type {0}", 
                 m != null ? m.GetType().FullName : "NULL"));
         }
