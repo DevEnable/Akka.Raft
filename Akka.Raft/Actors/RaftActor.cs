@@ -10,14 +10,16 @@ namespace Akka.Raft
     public class RaftActor<T> : ReceiveActor
     {
         private Term _term;
-        private LinkedList<T> _values;
+
+        // TODO - Add the equivilant of F#'s Some / None
+        private T _uncommitedValue;
+
+        // TODO - Consider Akka.Persistence for the values
+        private readonly LinkedList<T> _values = new LinkedList<T>();
         private IActorRef _leader = ActorRefs.Nobody;
         private IActorRef _colleagues;
         private ICancelable _schedulingCancellation;
-
-        // ReSharper disable once StaticMemberInGenericType
-        private static readonly TimeSpan LeaderRecieveTimeout = TimeSpan.FromMilliseconds(150);
-
+        
         private bool HasLeader => !_leader.IsNobody();
 
         protected override void PreStart()
@@ -58,7 +60,8 @@ namespace Akka.Raft
             {
                 if (Sender.Equals(_leader))
                 {
-                    _values.AddFirst(m);
+                    _uncommitedValue = m;
+                    _leader.Tell(new ValueReceivedMessage<T>(m));
                 }
                 else
                 {
@@ -67,12 +70,17 @@ namespace Akka.Raft
                 }
             });
 
+            Receive<CommitValueMessage>(m =>
+            {
+                _values.AddFirst(_uncommitedValue);
+                _uncommitedValue = default(T);
+            });
 
             CommonHandlers();
 
             if (!HasLeader)
             {
-                _schedulingCancellation = Context.System.Scheduler.ScheduleTellOnceCancelable(LeaderRecieveTimeout, Self, new BecomeCandidateMessage(), Self);
+                _schedulingCancellation = Context.System.Scheduler.ScheduleTellOnceCancelable(GetElectionTimeout(), Self, new BecomeCandidateMessage(), Self);
             }
         }
 
@@ -113,9 +121,24 @@ namespace Akka.Raft
                     return;
                 }
 
-                _values.AddFirst(m);
+                _uncommitedValue = m;
                 _colleagues.Tell(m);
             });
+
+            Receive<ValueReceivedMessage<T>>(m =>
+            {
+                // TODO - Figure the best way to manage the number of consensus nodes.  GetRoutees, pub / sub to leader?
+
+                // TODO - Once majority (> 50%) of nodes have written the value, commit it on the lead.
+
+                _values.AddFirst(_uncommitedValue);
+                _uncommitedValue = default(T);
+
+                _colleagues.Tell(new CommitValueMessage());
+            });
+
+            Receive<CommitValueMessage>(m => { });
+
             CommonHandlers();
         }
         
@@ -138,6 +161,15 @@ namespace Akka.Raft
                 _schedulingCancellation.Cancel();
                 _schedulingCancellation = null;
             }
+        }
+
+        private static TimeSpan GetElectionTimeout()
+        {
+            // TODO - Fix up the threading and best practice - https://msdn.microsoft.com/en-us/library/system.random.aspx
+
+            Random rand = new Random();
+
+            return TimeSpan.FromMilliseconds(150 + rand.Next(0, 151));
         }
 
         private class BecomeCandidateMessage
