@@ -57,12 +57,7 @@ namespace Akka.Raft
                 
             });
 
-            Receive<T>(m => !HasLeader, m =>
-            {
-                Context.GetLogger()
-                        .Warning(NoLeaderReason, m);
-                Sender.Tell(new CannotApplyValueMessage<T>(m, "Cannot apply this value as there is no leader."));
-            });
+            Receive<T>(m => !HasLeader, NoLeaderHandler<T>);
 
             Receive<T>(m =>
             {
