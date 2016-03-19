@@ -57,6 +57,13 @@ namespace Akka.Raft
                 
             });
 
+            Receive<T>(m => !HasLeader, m =>
+            {
+                Context.GetLogger()
+                        .Warning(NoLeaderReason, m);
+                Sender.Tell(new CannotApplyValueMessage<T>(m, "Cannot apply this value as there is no leader."));
+            });
+
             Receive<T>(m =>
             {
                 if (Sender.Equals(_leader))
@@ -68,6 +75,7 @@ namespace Akka.Raft
                 {
                     Context.GetLogger()
                         .Warning("Received value from a node that is not a leader, discarding value {0}", m);
+                    Sender.Tell(new CannotApplyValueMessage<T>(m, "Cannot apply this value as the sender is not the leader."));
                 }
             });
 
@@ -103,6 +111,10 @@ namespace Akka.Raft
                     }
                 }
             });
+
+            Receive<T>(m => NoLeaderHandler(m));
+
+            Receive<ValueReceivedMessage<T>>(m => NoLeaderHandler(m));
 
             // TODO - Find out logic for triggering the results of an election and promoting a leader.
 
@@ -153,6 +165,13 @@ namespace Akka.Raft
 
             ReceiveAny(m => Context.GetLogger().Warning("Unexpected message of type {0}", 
                 m != null ? m.GetType().FullName : "NULL"));
+        }
+
+        private void NoLeaderHandler<TMessage>(TMessage message)
+        {
+            Context.GetLogger()
+                        .Warning("Received value from a node when there is no leader, discarding value {0}", message);
+            Sender.Tell(new CannotApplyValueMessage<TMessage>(message, "Cannot handle this message as a leader has not been elected."));
         }
 
         private void CancelScheduling()

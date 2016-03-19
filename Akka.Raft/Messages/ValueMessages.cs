@@ -23,4 +23,18 @@
         }
     }
 
+    public class CannotApplyValueMessage<T>
+    {
+        public T Value { get; private set; }
+
+        public string Reason { get; private set; }
+
+
+        public CannotApplyValueMessage(T value, string reason)
+        {
+            Value = value;
+            Reason = reason;
+        } 
+    }
+
 }
